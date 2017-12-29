@@ -8,7 +8,7 @@ This light-weight library provides images with letter/text like the Gmail app. I
 ### Credits
 
 This is just an updated version of the rather-abandoned [TextDrawable](https://github.com/amulyakhare/TextDrawable/) and applying some of the active pull requests in it.
-Credits go completely to its creator.
+Credits go completely to its creator and the people who has contributed with those pull requests.
 
 ### How to use
 
