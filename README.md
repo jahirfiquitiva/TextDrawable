@@ -22,7 +22,7 @@ repositories{
 }
 
 dependencies {
-    implementation 'com.github.jahirfiquitiva:TextDrawable:1.0.0'
+    implementation 'com.github.jahirfiquitiva:TextDrawable:1.0.1'
 }
 ```
 
@@ -38,9 +38,7 @@ dependencies {
 ```
 **Note:** Specify width/height for the `ImageView` and the `drawable` will auto-scale to fit the size.
 ```java
-TextDrawable drawable = TextDrawable.builder()
-                .buildRect("A", Color.RED);
-
+TextDrawable drawable = TextDrawable.buildRect("A", Color.RED);
 ImageView image = (ImageView) findViewById(R.id.image_view);
 image.setImageDrawable(drawable);
 ```
@@ -51,11 +49,8 @@ image.setImageDrawable(drawable);
 </p>
 
 ```java
-TextDrawable drawable1 = TextDrawable.builder()
-                .buildRoundRect("A", Color.RED, 10); // radius in px
-
-TextDrawable drawable2 = TextDrawable.builder()
-                .buildRound("A", Color.RED);
+TextDrawable drawable1 = TextDrawable.buildRoundRect("A", Color.RED, 10); // radius in px
+TextDrawable drawable2 = TextDrawable.buildRound("A", Color.RED);
 ```
 
 #### 3. Add border:
