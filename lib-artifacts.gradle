@@ -1,5 +1,5 @@
 apply plugin: 'com.github.dcendents.android-maven'
-group = 'me.jahirfiquitiva'
+group = 'com.jahirfiquitiva'
 
 /*
  * Copyright (c) 2017. Jahir Fiquitiva

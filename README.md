@@ -22,7 +22,7 @@ repositories{
 }
 
 dependencies {
-    compile 'com.github.jahirfiquitiva:TextDrawable:1.0.0'
+    implementation 'com.github.jahirfiquitiva:TextDrawable:1.0.0'
 }
 ```
 
