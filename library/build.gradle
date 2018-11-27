@@ -1,8 +1,21 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
+    
+    lintOptions {
+        warningsAsErrors true
+        disable 'MissingTranslation',
+                'GoogleAppIndexingWarning',
+                'UnusedResources',
+                'ContentDescription',
+                'RtlSymmetry',
+                'RtlHardcoded',
+                'RtlEnabled',
+                'Overdraw'
+    }
 
     defaultConfig {
         minSdkVersion 16
@@ -10,6 +23,19 @@ android {
         versionCode 101
         versionName "1.0.1"
     }
+    
+    
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    
+     packagingOptions {
+        pickFirst 'META-INF/core_debug.kotlin_module'
+        pickFirst 'META-INF/core_release.kotlin_module'
+        pickFirst 'META-INF/library_debug.kotlin_module'
+        pickFirst 'META-INF/library_release.kotlin_module'
+    }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -25,14 +51,9 @@ dependencies {
 }
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-        resources {
-            srcDir 'src/main/res'
-        }
-    }
+    main.java.srcDirs += 'src/main/java'
+    main.java.srcDirs += 'src/main/kotlin'
+    main.resources.srcDirs += 'src/main/res'
 }
 
 apply from: '../lib-artifacts.gradle'
