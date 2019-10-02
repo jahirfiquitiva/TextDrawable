@@ -16,7 +16,9 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RectShape
 import android.graphics.drawable.shapes.RoundRectShape
 import androidx.annotation.ColorInt
+import java.util.Locale
 import kotlin.math.ceil
+import kotlin.math.min
 
 @Suppress("unused")
 open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder.shape) {
@@ -25,7 +27,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
     private val borderPaint: Paint
     private val text: String?
     @ColorInt private val color: Int
-    private val bgColor: Int
     private val shape: RectShape?
     private val height: Int
     private val width: Int
@@ -43,9 +44,10 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         radius = builder.radius
         
         // text and color
-        text = if (builder.toUpperCase) builder.text.orEmpty().toUpperCase() else builder.text
+        text =
+            if (builder.toUpperCase) builder.text.orEmpty().toUpperCase(Locale.ROOT)
+            else builder.text
         color = builder.color
-        bgColor = builder.backgroundColor
         
         // text paint settings
         fontSize = builder.fontSize
@@ -68,8 +70,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         borderPaint.isAntiAlias = true
         
         // drawable paint color
-        val paint = paint
-        paint.color = bgColor
+        paint.color = color
         
         bitmap = (builder.drawable as? BitmapDrawable)?.bitmap
     }
@@ -99,7 +100,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         if (bitmap == null) {
             // draw text
-            val fontSize = if (this.fontSize < 0) Math.min(width, height) / 2 else this.fontSize
+            val fontSize = if (this.fontSize < 0) min(width, height) / 2 else this.fontSize
             textPaint.textSize = fontSize.toFloat()
             
             val textBounds = Rect()
@@ -153,8 +154,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
             private set
         @ColorInt var color: Int = 0
             private set
-        var backgroundColor: Int = 0
-            private set
         var borderThickness: Int = 0
             private set
         var borderColor: Int = 0
@@ -183,7 +182,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         init {
             text = ""
             color = Color.GRAY
-            backgroundColor = Color.TRANSPARENT
             textColor = Color.WHITE
             borderThickness = 0
             borderColor = -1
@@ -208,11 +206,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         fun textColor(@ColorInt color: Int): Builder {
             this.textColor = color
-            return this
-        }
-        
-        fun backgroundColor(@ColorInt color: Int): Builder {
-            this.backgroundColor = color
             return this
         }
         
