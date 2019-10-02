@@ -16,14 +16,17 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RectShape
 import android.graphics.drawable.shapes.RoundRectShape
 import androidx.annotation.ColorInt
+import java.util.Locale
+import kotlin.math.ceil
+import kotlin.math.min
 
+@Suppress("unused")
 open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(builder.shape) {
     
     private val textPaint: Paint
     private val borderPaint: Paint
     private val text: String?
     @ColorInt private val color: Int
-    private val bgColor: Int
     private val shape: RectShape?
     private val height: Int
     private val width: Int
@@ -41,9 +44,10 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         radius = builder.radius
         
         // text and color
-        text = if (builder.toUpperCase) builder.text.orEmpty().toUpperCase() else builder.text
+        text =
+            if (builder.toUpperCase) builder.text.orEmpty().toUpperCase(Locale.ROOT)
+            else builder.text
         color = builder.color
-        bgColor = builder.backgroundColor
         
         // text paint settings
         fontSize = builder.fontSize
@@ -66,8 +70,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         borderPaint.isAntiAlias = true
         
         // drawable paint color
-        val paint = paint
-        paint.color = bgColor
+        paint.color = color
         
         bitmap = (builder.drawable as? BitmapDrawable)?.bitmap
     }
@@ -97,7 +100,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         if (bitmap == null) {
             // draw text
-            val fontSize = if (this.fontSize < 0) Math.min(width, height) / 2 else this.fontSize
+            val fontSize = if (this.fontSize < 0) min(width, height) / 2 else this.fontSize
             textPaint.textSize = fontSize.toFloat()
             
             val textBounds = Rect()
@@ -116,7 +119,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
     
     private fun drawBorder(canvas: Canvas) {
         val rect = RectF(bounds)
-        val inset = Math.ceil((borderThickness / 2).toDouble())
+        val inset = ceil((borderThickness / 2).toDouble())
         rect.inset(inset.toInt().toFloat(), inset.toInt().toFloat())
         when (shape) {
             is OvalShape -> canvas.drawOval(rect, borderPaint)
@@ -151,8 +154,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
             private set
         @ColorInt var color: Int = 0
             private set
-        var backgroundColor: Int = 0
-            private set
         var borderThickness: Int = 0
             private set
         var borderColor: Int = 0
@@ -181,14 +182,13 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         init {
             text = ""
             color = Color.GRAY
-            backgroundColor = Color.TRANSPARENT
             textColor = Color.WHITE
             borderThickness = 0
             borderColor = -1
             width = -1
             height = -1
             shape = RectShape()
-            font = Typeface.create("sans-serif-light", Typeface.NORMAL)
+            font = DEFAULT_FONT
             fontSize = -1
             isBold = false
             toUpperCase = false
@@ -206,11 +206,6 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         fun textColor(@ColorInt color: Int): Builder {
             this.textColor = color
-            return this
-        }
-        
-        fun backgroundColor(@ColorInt color: Int): Builder {
-            this.backgroundColor = color
             return this
         }
         
@@ -315,6 +310,11 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         companion object {
             private val EMPTY_RECT = RectF()
+            
+            @JvmStatic
+            val DEFAULT_FONT: Typeface by lazy {
+                Typeface.create("sans-serif-light", Typeface.NORMAL)
+            }
         }
     }
     
@@ -322,7 +322,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         private const val SHADE_FACTOR = 0.9F
         
         @JvmStatic
-        fun builder(what: TextDrawable.Builder.() -> Unit = {}): Builder {
+        fun builder(what: Builder.() -> Unit = {}): Builder {
             val builder = Builder()
             builder.beginConfig()
             builder.what()
@@ -331,22 +331,22 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         }
         
         @JvmStatic
-        fun rect(what: TextDrawable.Builder.() -> Unit = {}): Builder =
+        fun rect(what: Builder.() -> Unit = {}): Builder =
             builder(what).rect()
         
         @JvmStatic
-        fun round(what: TextDrawable.Builder.() -> Unit = {}): Builder =
+        fun round(what: Builder.() -> Unit = {}): Builder =
             builder(what).round()
         
         @JvmStatic
-        fun roundRect(radius: Int, what: TextDrawable.Builder.() -> Unit = {}): Builder =
+        fun roundRect(radius: Int, what: Builder.() -> Unit = {}): Builder =
             builder(what).roundRect(radius)
         
         @JvmStatic
         fun buildRect(
             text: String,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                      ): TextDrawable =
             builder(what).buildRect(text, color)
         
@@ -354,7 +354,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         fun buildRect(
             drawable: Drawable,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                      ): TextDrawable =
             builder(what).buildRect(drawable, color)
         
@@ -363,7 +363,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
             text: String,
             @ColorInt color: Int,
             radius: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                           ): TextDrawable =
             builder(what).buildRoundRect(text, color, radius)
         
@@ -372,7 +372,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
             drawable: Drawable,
             @ColorInt color: Int,
             radius: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                           ): TextDrawable =
             builder(what).buildRoundRect(drawable, color, radius)
         
@@ -380,7 +380,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         fun buildRound(
             text: String,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                       ): TextDrawable =
             builder(what).buildRound(text, color)
         
@@ -388,7 +388,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         fun buildRound(
             drawable: Drawable,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                       ): TextDrawable =
             builder(what).buildRound(drawable, color)
         
@@ -396,7 +396,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         fun build(
             text: String,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                  ): TextDrawable =
             builder(what).build(text, color)
         
@@ -404,7 +404,7 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         fun build(
             drawable: Drawable,
             @ColorInt color: Int,
-            what: TextDrawable.Builder.() -> Unit = {}
+            what: Builder.() -> Unit = {}
                  ): TextDrawable =
             builder(what).build(drawable, color)
     }
