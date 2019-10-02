@@ -310,7 +310,9 @@ open class TextDrawable private constructor(builder: Builder) : ShapeDrawable(bu
         
         companion object {
             private val EMPTY_RECT = RectF()
-            private val DEFAULT_FONT by lazy {
+            
+            @JvmStatic
+            val DEFAULT_FONT: Typeface by lazy {
                 Typeface.create("sans-serif-light", Typeface.NORMAL)
             }
         }
